@@ -37,25 +37,31 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var get_cvs_data_1 = require("./modules/get_cvs_data");
-var get_a_stock_data_1 = require("./modules/get_a_stock_data");
 var path = require("path");
+var yahooStockPrices = require("yahoo-stock-prices");
 var filePath = path.join(__dirname, "../inputdata/data.csv");
 var cvs_data = get_cvs_data_1.get_cvs_data(filePath);
-var main = function () { return __awaiter(void 0, void 0, void 0, function () {
-    var dirty_stock_data, _a, _b;
-    return __generator(this, function (_c) {
-        switch (_c.label) {
-            case 0: return [4 /*yield*/, get_a_stock_data_1.get_a_stock_data(cvs_data[0].Ticker)];
+var main = function (from_ago, to_later, cvs_data) { return __awaiter(void 0, void 0, void 0, function () {
+    var from_date, to_date;
+    return __generator(this, function (_a) {
+        from_date = cvs_data[0].date;
+        from_date.setDate(from_date.getDate() - from_ago);
+        console.log(from_date);
+        to_date = cvs_data[0].date;
+        to_date.setDate(to_date.getDate() + to_later);
+        return [2 /*return*/];
+    });
+}); };
+var main2 = function () { return __awaiter(void 0, void 0, void 0, function () {
+    var prices;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, yahooStockPrices.getHistoricalPrices(0, 6, 2020, 0, 8, 2020, "AAPL", "1d")];
             case 1:
-                _c.sent();
-                _b = (_a = Promise).all;
-                return [4 /*yield*/, get_a_stock_data_1.get_a_stock_data(cvs_data[0].Ticker)];
-            case 2: return [4 /*yield*/, _b.apply(_a, [_c.sent()])];
-            case 3:
-                dirty_stock_data = _c.sent();
-                console.log(dirty_stock_data);
+                prices = _a.sent();
+                console.log(prices);
                 return [2 /*return*/];
         }
     });
 }); };
-main();
+main2();

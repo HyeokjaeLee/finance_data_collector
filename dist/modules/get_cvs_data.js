@@ -9,13 +9,8 @@ var get_cvs_data = function (filePath) {
         var row_data = data.replace("\r", "");
         return row_data.split(",");
     });
-    var data_title = split_by_column.slice(0, 1)[0];
     var data_value = split_by_column.slice(1);
-    return data_value.map(function (data) {
-        var result = {};
-        result[data_title[0]] = new Date(data[0]);
-        result[data_title[1]] = data[1];
-        return result;
-    });
+    var result = data_value.map(function (data) { return ({ date: new Date(data[0]), ticker: data[1] }); });
+    return result;
 };
 exports.get_cvs_data = get_cvs_data;
