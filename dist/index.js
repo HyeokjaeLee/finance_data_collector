@@ -41,27 +41,77 @@ var path = require("path");
 var yahooStockPrices = require("yahoo-stock-prices");
 var filePath = path.join(__dirname, "../inputdata/data.csv");
 var cvs_data = get_cvs_data_1.get_cvs_data(filePath);
-var main = function (from_ago, to_later, cvs_data) { return __awaiter(void 0, void 0, void 0, function () {
-    var from_date, to_date;
-    return __generator(this, function (_a) {
-        from_date = cvs_data[0].date;
-        from_date.setDate(from_date.getDate() - from_ago);
-        console.log(from_date);
-        to_date = cvs_data[0].date;
-        to_date.setDate(to_date.getDate() + to_later);
-        return [2 /*return*/];
+var split_date = function (date) { return ({ year: date.getFullYear(), month: date.getMonth(), day: date.getDate() }); };
+var count_date_without_holiday = function (from_date, to_date) {
+    var holiday_count = 0;
+    var date_count = Math.ceil((to_date.getTime() - from_date.getTime()) / (1000 * 3600 * 24));
+    for (var i = new Date(from_date); i <= to_date; i.setDate(i.getDate() + 1)) {
+        var day = i.getDay();
+        if (day == 0 || day == 6) {
+            holiday_count++;
+        }
+    }
+    return date_count - holiday_count;
+};
+var change_cvs_data_for_getting_stock_data = function (from_ago, to_later, cvs_data) {
+    return cvs_data.map(function (cvs_data) {
+        var date_num = cvs_data.date.getDate();
+        var from_date = new Date(cvs_data.date);
+        from_date.setDate(date_num - from_ago);
+        for (; count_date_without_holiday(from_date, cvs_data.date) < from_ago;) {
+            from_date.setDate(from_date.getDate() - 1);
+        }
+        var to_date = new Date(cvs_data.date);
+        to_date.setDate(date_num + to_later);
+        for (; count_date_without_holiday(cvs_data.date, to_date) < to_later;) {
+            to_date.setDate(to_date.getDate() + 1);
+        }
+        var from_date_obj = split_date(from_date);
+        var to_date_obj = split_date(to_date);
+        return { ticker: cvs_data.ticker, trade_date: cvs_data.date, from: from_date_obj, to: to_date_obj };
     });
-}); };
-var main2 = function () { return __awaiter(void 0, void 0, void 0, function () {
-    var prices;
+};
+var get_stock_data = function (cvs_data) { return __awaiter(void 0, void 0, void 0, function () {
+    var error_ticker, stock_data;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, yahooStockPrices.getHistoricalPrices(0, 6, 2020, 0, 8, 2020, "AAPL", "1d")];
+            case 0:
+                error_ticker = [];
+                stock_data = { ticker: undefined, trade_date: undefined, data: undefined };
+                return [4 /*yield*/, Promise.all(cvs_data.map(function (cvs_data) { return __awaiter(void 0, void 0, void 0, function () {
+                        var a_stock_data, processed_stock_data, e_1;
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0:
+                                    _a.trys.push([0, 3, , 4]);
+                                    return [4 /*yield*/, yahooStockPrices.getHistoricalPrices(cvs_data.from.month, cvs_data.from.day, cvs_data.from.year, cvs_data.to.month, cvs_data.to.day, cvs_data.to.year, cvs_data.ticker, "1d")];
+                                case 1:
+                                    a_stock_data = _a.sent();
+                                    return [4 /*yield*/, a_stock_data.map(function (stock_data) {
+                                            var date = new Date("1970-1-1");
+                                            date.setSeconds(date.getSeconds() + stock_data.date);
+                                            return { date: date, price: stock_data.close };
+                                        })];
+                                case 2:
+                                    processed_stock_data = _a.sent();
+                                    stock_data["ticker"] = cvs_data.ticker;
+                                    stock_data["trade_date"] = cvs_data.trade_date;
+                                    stock_data["data"] = processed_stock_data;
+                                    return [3 /*break*/, 4];
+                                case 3:
+                                    e_1 = _a.sent();
+                                    error_ticker.push(cvs_data.ticker);
+                                    return [3 /*break*/, 4];
+                                case 4: return [2 /*return*/];
+                            }
+                        });
+                    }); }))];
             case 1:
-                prices = _a.sent();
-                console.log(prices);
-                return [2 /*return*/];
+                _a.sent();
+                console.log(stock_data);
+                return [2 /*return*/, { stock_data: stock_data, error_ticker: error_ticker }];
         }
     });
 }); };
-main2();
+var test_data = [{ date: new Date("2021-1-5"), ticker: "PRGO" }];
+get_stock_data(change_cvs_data_for_getting_stock_data(1, 2, test_data));
