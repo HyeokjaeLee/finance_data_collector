@@ -10,6 +10,7 @@ const ObjArr2String = (ObjArr: any, to: number) => {
     ObjArr.data.map((data: any) => {
       content = content + "," + data.price;
     });
+    content = content + "\r\n";
   });
   return content;
 };

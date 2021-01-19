@@ -13,6 +13,7 @@ var ObjArr2String = function (ObjArr, to) {
         ObjArr.data.map(function (data) {
             content = content + "," + data.price;
         });
+        content = content + "\r\n";
     });
     return content;
 };

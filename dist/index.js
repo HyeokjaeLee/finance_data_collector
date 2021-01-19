@@ -48,24 +48,27 @@ var test_data = [
     { date: new Date("2021-1-2"), ticker: "HHC" },
     { date: new Date("2020-12-10"), ticker: "GEF" },
 ];
-(function () { return __awaiter(void 0, void 0, void 0, function () {
-    var finance_data, stock_data, error_ticker;
+main(test_data, 5);
+function main(data, to_later) {
     var _a;
-    return __generator(this, function (_b) {
-        switch (_b.label) {
-            case 0:
-                console.log(5 + "일 후 까지 데이터를 검색합니다.");
-                console.log("잠시만 기다려주세요.");
-                return [4 /*yield*/, get_stock_data_1.get_stock_data(get_stock_data_1.change_cvs_data_for_getting_stock_data(5, test_data))];
-            case 1:
-                finance_data = _b.sent();
-                stock_data = finance_data.stock_data;
-                error_ticker = finance_data.error_ticker;
-                console.log(stock_data);
-                console.log("첫번째 stock의 data object 확인:");
-                console.log((_a = stock_data[0]) === null || _a === void 0 ? void 0 : _a.data);
-                objarr2cvs_1.save2cvs(output_filePath, objarr2cvs_1.ObjArr2String(stock_data, 5));
-                return [2 /*return*/];
-        }
+    return __awaiter(this, void 0, void 0, function () {
+        var finance_data, stock_data, error_ticker;
+        return __generator(this, function (_b) {
+            switch (_b.label) {
+                case 0:
+                    console.log(5 + "일 후 까지 데이터를 검색합니다.");
+                    console.log("잠시만 기다려주세요.");
+                    return [4 /*yield*/, get_stock_data_1.get_stock_data(get_stock_data_1.change_cvs_data_for_getting_stock_data(to_later, data))];
+                case 1:
+                    finance_data = _b.sent();
+                    stock_data = finance_data.stock_data;
+                    error_ticker = finance_data.error_ticker;
+                    console.log(stock_data);
+                    console.log("첫번째 stock의 data object 확인:");
+                    console.log((_a = stock_data[0]) === null || _a === void 0 ? void 0 : _a.data);
+                    objarr2cvs_1.save2cvs(output_filePath, objarr2cvs_1.ObjArr2String(stock_data, to_later));
+                    return [2 /*return*/];
+            }
+        });
     });
-}); })();
+}
