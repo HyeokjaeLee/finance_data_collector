@@ -38,7 +38,10 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.change_cvs_data_for_getting_stock_data = exports.get_stock_data = void 0;
 var yahooStockPrices = require("yahoo-stock-prices");
+var base_module_1 = require("./base_module");
+//getHistoricalPrices 함수에 들어갈 변수 형식으로 날짜 분할
 var split_date = function (date) { return ({ year: date.getFullYear(), month: date.getMonth(), day: date.getDate() }); };
+//주말에는 시장이 열지 않으므로 제외 하기위해 주말 제외(그외 공휴일은 제외하지 못함)
 var count_date_without_holiday = function (from_date, to_date) {
     var holiday_count = 0;
     var date_count = Math.ceil((to_date.getTime() - from_date.getTime()) / (1000 * 3600 * 24));
@@ -50,16 +53,12 @@ var count_date_without_holiday = function (from_date, to_date) {
     }
     return date_count - holiday_count;
 };
-var change_cvs_data_for_getting_stock_data = function (from_ago, to_later, cvs_data) {
+var change_cvs_data_for_getting_stock_data = function (to_later, cvs_data) {
     return cvs_data.map(function (cvs_data) {
-        var date_num = cvs_data.date.getDate();
         var from_date = new Date(cvs_data.date);
-        from_date.setDate(date_num - from_ago);
-        for (; count_date_without_holiday(from_date, cvs_data.date) < from_ago;) {
-            from_date.setDate(from_date.getDate() - 1);
-        }
+        from_date.setDate(cvs_data.date.getDate() - 1); //cvs파일의 타임존과 modules에서 받아오는 timezone문제로 -1(한국시간 기준)
         var to_date = new Date(cvs_data.date);
-        to_date.setDate(date_num + to_later);
+        to_date.setDate(cvs_data.date.getDate() + to_later);
         for (; count_date_without_holiday(cvs_data.date, to_date) < to_later;) {
             to_date.setDate(to_date.getDate() + 1);
         }
@@ -87,10 +86,12 @@ var get_stock_data = function (cvs_data) { return __awaiter(void 0, void 0, void
                                     return [4 /*yield*/, a_stock_data.map(function (stock_data) {
                                             var date = new Date("1970-1-1");
                                             date.setSeconds(date.getSeconds() + stock_data.date);
-                                            return { date: date, price: stock_data.close };
+                                            var date_str = base_module_1.getFormatDate(date, "-");
+                                            return { date: date_str, price: stock_data.close };
                                         })];
                                 case 2:
                                     processed_stock_data = _a.sent();
+                                    processed_stock_data.reverse();
                                     return [2 /*return*/, { ticker: cvs_data.ticker, trade_date: cvs_data.trade_date, data: processed_stock_data }];
                                 case 3:
                                     e_1 = _a.sent();

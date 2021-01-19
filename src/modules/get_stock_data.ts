@@ -1,7 +1,10 @@
 const yahooStockPrices = require("yahoo-stock-prices");
 import type { CVS_DATA, Split_date, Processed_cvs_data } from "./base_module";
+import { getFormatDate } from "./base_module";
 
+//getHistoricalPrices 함수에 들어갈 변수 형식으로 날짜 분할
 const split_date = (date: Date): Split_date => ({ year: date.getFullYear(), month: date.getMonth(), day: date.getDate() });
+//주말에는 시장이 열지 않으므로 제외 하기위해 주말 제외(그외 공휴일은 제외하지 못함)
 const count_date_without_holiday = (from_date: Date, to_date: Date) => {
   let holiday_count = 0;
   let date_count = Math.ceil((to_date.getTime() - from_date.getTime()) / (1000 * 3600 * 24));
@@ -13,17 +16,12 @@ const count_date_without_holiday = (from_date: Date, to_date: Date) => {
   }
   return date_count - holiday_count;
 };
-
-const change_cvs_data_for_getting_stock_data = (from_ago: number, to_later: number, cvs_data: CVS_DATA[]): Processed_cvs_data[] =>
+const change_cvs_data_for_getting_stock_data = (to_later: number, cvs_data: CVS_DATA[]): Processed_cvs_data[] =>
   cvs_data.map((cvs_data: CVS_DATA) => {
-    const date_num: number = cvs_data.date.getDate();
     const from_date: Date = new Date(cvs_data.date);
-    from_date.setDate(date_num - from_ago);
-    for (; count_date_without_holiday(from_date, cvs_data.date) < from_ago; ) {
-      from_date.setDate(from_date.getDate() - 1);
-    }
+    from_date.setDate(cvs_data.date.getDate() - 1); //cvs파일의 타임존과 modules에서 받아오는 timezone문제로 -1(한국시간 기준)
     const to_date: Date = new Date(cvs_data.date);
-    to_date.setDate(date_num + to_later);
+    to_date.setDate(cvs_data.date.getDate() + to_later);
     for (; count_date_without_holiday(cvs_data.date, to_date) < to_later; ) {
       to_date.setDate(to_date.getDate() + 1);
     }
@@ -50,8 +48,10 @@ const get_stock_data = async (cvs_data: Processed_cvs_data[]) => {
         const processed_stock_data = await a_stock_data.map((stock_data: any) => {
           const date = new Date("1970-1-1");
           date.setSeconds(date.getSeconds() + stock_data.date);
-          return { date: date, price: stock_data.close };
+          const date_str = getFormatDate(date, "-");
+          return { date: date_str, price: stock_data.close };
         });
+        processed_stock_data.reverse();
         return { ticker: cvs_data.ticker, trade_date: cvs_data.trade_date, data: processed_stock_data };
       } catch (e) {
         error_ticker.push(cvs_data.ticker);

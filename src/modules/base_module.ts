@@ -24,4 +24,23 @@ interface Processed_cvs_data {
   to: Split_date;
 }
 
+function getFormatDate(input_date: Date, form: string) {
+  const date = new Date(input_date);
+  const num2str = (num: number) => {
+    let result;
+    if (num < 10) {
+      result = "0" + num;
+    } else {
+      result = String(num);
+    }
+    return result;
+  };
+  let year: number = date.getFullYear(); //yyyy
+  let month: string = num2str(1 + date.getMonth()); //M
+  let day: string = num2str(date.getDate());
+
+  return year + form + month + form + day;
+}
+
 export type { CVS_DATA, A_stock_data, Processed_cvs_data, Split_date };
+export { getFormatDate };

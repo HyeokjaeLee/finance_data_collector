@@ -37,44 +37,26 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var path = require("path");
-var readline = require("readline");
 var get_cvs_data_1 = require("./modules/get_cvs_data");
 var get_stock_data_1 = require("./modules/get_stock_data");
-var filePath = path.join(__dirname, "../inputdata/data.csv");
-var cvs_data = get_cvs_data_1.get_cvs_data(filePath);
+var objarr2cvs_1 = require("./modules/objarr2cvs");
+var input_filePath = path.join(__dirname, "../data/input_data.csv");
+var output_filePath = path.join(__dirname, "../data/output_data.csv");
+var cvs_data = get_cvs_data_1.get_cvs_data(input_filePath);
 var test_data = [
     { date: new Date("2021-1-5"), ticker: "PRGO" },
     { date: new Date("2021-1-2"), ticker: "HHC" },
     { date: new Date("2020-12-10"), ticker: "GEF" },
 ];
-var rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout,
-});
-console.log("몇일 전 데이터 부터 검색할까요?");
-var input = [];
-rl.on("line", function (line) {
-    input.push(line);
-    switch (input.length) {
-        case 1:
-            console.log("몇일 후 데이터 까지 검색할까요?");
-            break;
-        case 2:
-            console.log(input[0] + "일 전 부터 " + input[1] + "일 후 까지 데이터를 검색합니다.");
-            console.log("잠시만 기다려주세요.");
-            main_fn(Number(input[0]), Number(input[1]), test_data);
-            break;
-        case 3:
-            rl.close();
-            break;
-    }
-});
-var main_fn = function (from, to, data) { return __awaiter(void 0, void 0, void 0, function () {
+(function () { return __awaiter(void 0, void 0, void 0, function () {
     var finance_data, stock_data, error_ticker;
     var _a;
     return __generator(this, function (_b) {
         switch (_b.label) {
-            case 0: return [4 /*yield*/, get_stock_data_1.get_stock_data(get_stock_data_1.change_cvs_data_for_getting_stock_data(from, to, data))];
+            case 0:
+                console.log(5 + "일 후 까지 데이터를 검색합니다.");
+                console.log("잠시만 기다려주세요.");
+                return [4 /*yield*/, get_stock_data_1.get_stock_data(get_stock_data_1.change_cvs_data_for_getting_stock_data(5, test_data))];
             case 1:
                 finance_data = _b.sent();
                 stock_data = finance_data.stock_data;
@@ -82,7 +64,8 @@ var main_fn = function (from, to, data) { return __awaiter(void 0, void 0, void 
                 console.log(stock_data);
                 console.log("첫번째 stock의 data object 확인:");
                 console.log((_a = stock_data[0]) === null || _a === void 0 ? void 0 : _a.data);
+                objarr2cvs_1.save2cvs(output_filePath, objarr2cvs_1.ObjArr2String(stock_data, 5));
                 return [2 /*return*/];
         }
     });
-}); };
+}); })();
