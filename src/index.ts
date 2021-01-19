@@ -15,7 +15,7 @@ const test_data = [
 main(test_data, 5);
 
 async function main(data: CVS_DATA[], to_later: number) {
-  console.log(5 + "일 후 까지 데이터를 검색합니다.");
+  console.log(to_later + "일 후 까지 데이터를 검색합니다.");
   console.log("잠시만 기다려주세요.");
   const finance_data = await get_stock_data(change_cvs_data_for_getting_stock_data(to_later, data));
   const stock_data = finance_data.stock_data;

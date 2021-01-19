@@ -56,7 +56,7 @@ function main(data, to_later) {
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
-                    console.log(5 + "일 후 까지 데이터를 검색합니다.");
+                    console.log(to_later + "일 후 까지 데이터를 검색합니다.");
                     console.log("잠시만 기다려주세요.");
                     return [4 /*yield*/, get_stock_data_1.get_stock_data(get_stock_data_1.change_cvs_data_for_getting_stock_data(to_later, data))];
                 case 1:
