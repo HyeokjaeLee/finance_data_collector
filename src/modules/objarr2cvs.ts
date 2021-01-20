@@ -19,8 +19,9 @@ const save2cvs = (output_filePath: any, content: string) => {
   fs.writeFile(output_filePath, content, function (err: any) {
     if (err) {
       return console.log(err);
+    } else {
+      console.log("csv파일을 성공적으로 저장했습니다.");
     }
-    console.log("The file was saved!");
   });
 };
 

@@ -48,7 +48,7 @@ var test_data = [
     { date: new Date("2021-1-2"), ticker: "HHC" },
     { date: new Date("2020-12-10"), ticker: "GEF" },
 ];
-main(test_data, 5);
+main(cvs_data, 20);
 function main(data, to_later) {
     var _a;
     return __awaiter(this, void 0, void 0, function () {
@@ -64,8 +64,11 @@ function main(data, to_later) {
                     stock_data = finance_data.stock_data;
                     error_ticker = finance_data.error_ticker;
                     console.log(stock_data);
-                    console.log("첫번째 stock의 data object 확인:");
+                    console.log("-----------첫번째 stock의 data object 확인-----------");
                     console.log((_a = stock_data[0]) === null || _a === void 0 ? void 0 : _a.data);
+                    console.log("-----------------오류가 있는 ticker------------------");
+                    console.log(error_ticker);
+                    console.log("-----------------------------------------------------");
                     objarr2cvs_1.save2cvs(output_filePath, objarr2cvs_1.ObjArr2String(stock_data, to_later));
                     return [2 /*return*/];
             }

@@ -23,7 +23,9 @@ var save2cvs = function (output_filePath, content) {
         if (err) {
             return console.log(err);
         }
-        console.log("The file was saved!");
+        else {
+            console.log("csv파일을 성공적으로 저장했습니다.");
+        }
     });
 };
 exports.save2cvs = save2cvs;

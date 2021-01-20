@@ -6,13 +6,13 @@ import { ObjArr2String, save2cvs } from "./modules/objarr2cvs";
 const input_filePath = path.join(__dirname, "../data/input_data.csv");
 const output_filePath = path.join(__dirname, "../data/output_data.csv");
 const cvs_data: CVS_DATA[] = get_cvs_data(input_filePath);
-const test_data = [
+const test_data: CVS_DATA[] = [
   { date: new Date("2021-1-5"), ticker: "PRGO" },
   { date: new Date("2021-1-2"), ticker: "HHC" },
   { date: new Date("2020-12-10"), ticker: "GEF" },
 ];
 
-main(test_data, 5);
+main(cvs_data, 20);
 
 async function main(data: CVS_DATA[], to_later: number) {
   console.log(to_later + "일 후 까지 데이터를 검색합니다.");
@@ -21,7 +21,10 @@ async function main(data: CVS_DATA[], to_later: number) {
   const stock_data = finance_data.stock_data;
   const error_ticker = finance_data.error_ticker;
   console.log(stock_data);
-  console.log("첫번째 stock의 data object 확인:");
+  console.log("-----------첫번째 stock의 data object 확인-----------");
   console.log(stock_data[0]?.data);
+  console.log("-----------------오류가 있는 ticker------------------");
+  console.log(error_ticker);
+  console.log("-----------------------------------------------------");
   save2cvs(output_filePath, ObjArr2String(stock_data, to_later));
 }
