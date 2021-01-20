@@ -48,30 +48,39 @@ var test_data = [
     { date: new Date("2021-1-2"), ticker: "HHC" },
     { date: new Date("2020-12-10"), ticker: "GEF" },
 ];
-main(cvs_data, 20);
-function main(data, to_later) {
+//--------------------------------------------------
+var Target_CVS_DATA = test_data; // 정보를 원하는 csv데이터 (cvs_data || test_data)
+var Target_to_later = 20; // 기준일로 부터 며칠후까지 데이터를 받아올지
+//--------------------------------------------------
+var main = function (data, to_later) { return __awaiter(void 0, void 0, void 0, function () {
+    var finance_data, stock_data, error_ticker;
     var _a;
-    return __awaiter(this, void 0, void 0, function () {
-        var finance_data, stock_data, error_ticker;
-        return __generator(this, function (_b) {
-            switch (_b.label) {
-                case 0:
-                    console.log(to_later + "일 후 까지 데이터를 검색합니다.");
-                    console.log("잠시만 기다려주세요.");
-                    return [4 /*yield*/, get_stock_data_1.get_stock_data(get_stock_data_1.change_cvs_data_for_getting_stock_data(to_later, data))];
-                case 1:
-                    finance_data = _b.sent();
-                    stock_data = finance_data.stock_data;
-                    error_ticker = finance_data.error_ticker;
-                    console.log(stock_data);
-                    console.log("-----------첫번째 stock의 data object 확인-----------");
-                    console.log((_a = stock_data[0]) === null || _a === void 0 ? void 0 : _a.data);
-                    console.log("-----------------오류가 있는 ticker------------------");
+    return __generator(this, function (_b) {
+        switch (_b.label) {
+            case 0:
+                console.log(to_later + "일 후 까지 데이터를 검색합니다.");
+                console.log("잠시만 기다려주세요.");
+                return [4 /*yield*/, get_stock_data_1.get_stock_data(get_stock_data_1.change_cvs_data_for_getting_stock_data(to_later, data))];
+            case 1:
+                finance_data = _b.sent();
+                stock_data = finance_data.stock_data;
+                error_ticker = finance_data.error_ticker;
+                console.log("\n-------------------전체 stock 확인-------------------\n");
+                console.log(stock_data);
+                console.log("\n-----------마지막 stock의 data object 확인-----------\n");
+                console.log((_a = stock_data[stock_data.length - 1]) === null || _a === void 0 ? void 0 : _a.data);
+                console.log("\n-----------------오류가 있는 ticker------------------\n");
+                console.log(error_ticker);
+                if ((error_ticker.length = 0)) {
+                    console.log("[오류가 없습니다.]");
+                }
+                else {
                     console.log(error_ticker);
-                    console.log("-----------------------------------------------------");
-                    objarr2cvs_1.save2cvs(output_filePath, objarr2cvs_1.ObjArr2String(stock_data, to_later));
-                    return [2 /*return*/];
-            }
-        });
+                }
+                console.log("\n-----------------------------------------------------\n");
+                objarr2cvs_1.save2cvs(output_filePath, objarr2cvs_1.ObjArr2String(stock_data, to_later));
+                return [2 /*return*/];
+        }
     });
-}
+}); };
+main(Target_CVS_DATA, Target_to_later);
