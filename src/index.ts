@@ -13,7 +13,7 @@ const test_data: CVS_DATA[] = [
 ];
 
 //--------------------------------------------------
-const Target_CVS_DATA = test_data; // 정보를 원하는 csv데이터 (cvs_data || test_data)
+const Target_CVS_DATA = cvs_data; // 정보를 원하는 csv데이터 (cvs_data || test_data)
 const Target_to_later = 20; // 기준일로 부터 며칠후까지 데이터를 받아올지
 //--------------------------------------------------
 
