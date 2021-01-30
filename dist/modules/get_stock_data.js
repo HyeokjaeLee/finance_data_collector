@@ -36,7 +36,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.change_cvs_data_for_getting_stock_data = exports.get_stock_data = void 0;
+exports.change_csv_data_for_getting_stock_data = exports.get_stock_data = void 0;
 var yahooStockPrices = require("yahoo-stock-prices");
 var base_module_1 = require("./base_module");
 //getHistoricalPrices 함수에 들어갈 변수 형식으로 날짜 분할
@@ -53,34 +53,45 @@ var count_date_without_holiday = function (from_date, to_date) {
     }
     return date_count - holiday_count;
 };
-var change_cvs_data_for_getting_stock_data = function (to_later, cvs_data) {
-    return cvs_data.map(function (cvs_data) {
-        var from_date = new Date(cvs_data.date);
-        from_date.setDate(cvs_data.date.getDate() - 1); //cvs파일의 타임존과 modules에서 받아오는 timezone문제로 -1(한국시간 기준)
-        var to_date = new Date(cvs_data.date);
-        to_date.setDate(cvs_data.date.getDate() + to_later);
-        for (; count_date_without_holiday(cvs_data.date, to_date) < to_later;) {
+var change_csv_data_for_getting_stock_data = function (to_later, csv_data) {
+    return csv_data.map(function (csv_data) {
+        var from_date = new Date(csv_data.date);
+        from_date.setDate(csv_data.date.getDate() - 1); //csv파일의 타임존과 modules에서 받아오는 timezone문제로 -1(한국시간 기준)
+        var to_date = new Date(csv_data.date);
+        to_date.setDate(csv_data.date.getDate() + to_later);
+        for (; count_date_without_holiday(csv_data.date, to_date) < to_later;) {
             to_date.setDate(to_date.getDate() + 1);
         }
         var from_date_obj = split_date(from_date);
         var to_date_obj = split_date(to_date);
-        return { ticker: cvs_data.ticker, trade_date: cvs_data.date, from: from_date_obj, to: to_date_obj };
+        return { ticker: csv_data.ticker, trade_date: csv_data.date, from: from_date_obj, to: to_date_obj };
     });
 };
-exports.change_cvs_data_for_getting_stock_data = change_cvs_data_for_getting_stock_data;
-var get_stock_data = function (cvs_data) { return __awaiter(void 0, void 0, void 0, function () {
-    var error_ticker, stock_data;
+exports.change_csv_data_for_getting_stock_data = change_csv_data_for_getting_stock_data;
+var get_stock_data = function (csv_data) { return __awaiter(void 0, void 0, void 0, function () {
+    function isNumber(obj) {
+        return obj !== undefined && typeof (obj) === 'number' && !isNaN(obj);
+    }
+    function filterByID(item) {
+        if (isNumber(item.price) && item.price !== 0) {
+            return true;
+        }
+        invalidEntries++;
+        return false;
+    }
+    var invalidEntries, error_ticker, stock_data;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
+                invalidEntries = 0;
                 error_ticker = [];
-                return [4 /*yield*/, Promise.all(cvs_data.map(function (cvs_data) { return __awaiter(void 0, void 0, void 0, function () {
-                        var a_stock_data, processed_stock_data, e_1;
+                return [4 /*yield*/, Promise.all(csv_data.map(function (csv_data) { return __awaiter(void 0, void 0, void 0, function () {
+                        var a_stock_data, processed_stock_data, test, e_1;
                         return __generator(this, function (_a) {
                             switch (_a.label) {
                                 case 0:
                                     _a.trys.push([0, 3, , 4]);
-                                    return [4 /*yield*/, yahooStockPrices.getHistoricalPrices(cvs_data.from.month, cvs_data.from.day, cvs_data.from.year, cvs_data.to.month, cvs_data.to.day, cvs_data.to.year, cvs_data.ticker, "1d")];
+                                    return [4 /*yield*/, yahooStockPrices.getHistoricalPrices(csv_data.from.month, csv_data.from.day, csv_data.from.year, csv_data.to.month, csv_data.to.day, csv_data.to.year, csv_data.ticker, "1d")];
                                 case 1:
                                     a_stock_data = _a.sent();
                                     return [4 /*yield*/, a_stock_data.map(function (stock_data) {
@@ -92,10 +103,11 @@ var get_stock_data = function (cvs_data) { return __awaiter(void 0, void 0, void
                                 case 2:
                                     processed_stock_data = _a.sent();
                                     processed_stock_data.reverse();
-                                    return [2 /*return*/, { ticker: cvs_data.ticker, trade_date: cvs_data.trade_date, data: processed_stock_data }];
+                                    test = processed_stock_data.filter(filterByID);
+                                    return [2 /*return*/, { ticker: csv_data.ticker, trade_date: csv_data.trade_date, data: test }];
                                 case 3:
                                     e_1 = _a.sent();
-                                    error_ticker.push(cvs_data.ticker);
+                                    error_ticker.push(csv_data.ticker);
                                     return [3 /*break*/, 4];
                                 case 4: return [2 /*return*/];
                             }

@@ -1,5 +1,5 @@
 const yahooStockPrices = require("yahoo-stock-prices");
-import type { CVS_DATA, Split_date, Processed_cvs_data } from "./base_module";
+import type { CSV_DATA, Split_date, Processed_csv_data } from "./base_module";
 import { getFormatDate } from "./base_module";
 
 //getHistoricalPrices 함수에 들어갈 변수 형식으로 날짜 분할
@@ -16,33 +16,48 @@ const count_date_without_holiday = (from_date: Date, to_date: Date) => {
   }
   return date_count - holiday_count;
 };
-const change_cvs_data_for_getting_stock_data = (to_later: number, cvs_data: CVS_DATA[]): Processed_cvs_data[] =>
-  cvs_data.map((cvs_data: CVS_DATA) => {
-    const from_date: Date = new Date(cvs_data.date);
-    from_date.setDate(cvs_data.date.getDate() - 1); //cvs파일의 타임존과 modules에서 받아오는 timezone문제로 -1(한국시간 기준)
-    const to_date: Date = new Date(cvs_data.date);
-    to_date.setDate(cvs_data.date.getDate() + to_later);
-    for (; count_date_without_holiday(cvs_data.date, to_date) < to_later; ) {
+const change_csv_data_for_getting_stock_data = (to_later: number, csv_data: CSV_DATA[]): Processed_csv_data[] =>
+  csv_data.map((csv_data: CSV_DATA) => {
+    const from_date: Date = new Date(csv_data.date);
+    from_date.setDate(csv_data.date.getDate() - 1); //csv파일의 타임존과 modules에서 받아오는 timezone문제로 -1(한국시간 기준)
+    const to_date: Date = new Date(csv_data.date);
+    to_date.setDate(csv_data.date.getDate() + to_later);
+    for (; count_date_without_holiday(csv_data.date, to_date) < to_later; ) {
       to_date.setDate(to_date.getDate() + 1);
     }
     const from_date_obj = split_date(from_date);
     const to_date_obj = split_date(to_date);
-    return { ticker: cvs_data.ticker, trade_date: cvs_data.date, from: from_date_obj, to: to_date_obj };
+    return { ticker: csv_data.ticker, trade_date: csv_data.date, from: from_date_obj, to: to_date_obj };
   });
 
-const get_stock_data = async (cvs_data: Processed_cvs_data[]) => {
+const get_stock_data = async (csv_data: Processed_csv_data[]) => {
+
+let invalidEntries = 0;
+
+function isNumber(obj:any) {
+  return obj !== undefined && typeof(obj) === 'number' && !isNaN(obj);
+}
+
+function filterByID(item:any) {
+  if (isNumber(item.price) && item.price !== 0) {
+    return true;
+  }
+  invalidEntries++;
+  return false;
+}
+
   const error_ticker: string[] = [];
   let stock_data = await Promise.all(
-    cvs_data.map(async (cvs_data: Processed_cvs_data) => {
+    csv_data.map(async (csv_data: Processed_csv_data) => {
       try {
         const a_stock_data = await yahooStockPrices.getHistoricalPrices(
-          cvs_data.from.month,
-          cvs_data.from.day,
-          cvs_data.from.year,
-          cvs_data.to.month,
-          cvs_data.to.day,
-          cvs_data.to.year,
-          cvs_data.ticker,
+          csv_data.from.month,
+          csv_data.from.day,
+          csv_data.from.year,
+          csv_data.to.month,
+          csv_data.to.day,
+          csv_data.to.year,
+          csv_data.ticker,
           "1d",
         );
         const processed_stock_data = await a_stock_data.map((stock_data: any) => {
@@ -52,13 +67,14 @@ const get_stock_data = async (cvs_data: Processed_cvs_data[]) => {
           return { date: date_str, price: stock_data.close };
         });
         processed_stock_data.reverse();
-        return { ticker: cvs_data.ticker, trade_date: cvs_data.trade_date, data: processed_stock_data };
+        let test = processed_stock_data.filter(filterByID);
+        return { ticker: csv_data.ticker, trade_date: csv_data.trade_date, data: test };
       } catch (e) {
-        error_ticker.push(cvs_data.ticker);
+        error_ticker.push(csv_data.ticker);
       }
     }),
   );
   return { stock_data: stock_data, error_ticker: error_ticker };
 };
 
-export { get_stock_data, change_cvs_data_for_getting_stock_data };
+export { get_stock_data, change_csv_data_for_getting_stock_data };

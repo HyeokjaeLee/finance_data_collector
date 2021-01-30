@@ -1,4 +1,4 @@
-interface CVS_DATA {
+interface CSV_DATA {
   date: Date;
   ticker: string;
 }
@@ -17,7 +17,7 @@ interface Split_date {
   day: number;
 }
 
-interface Processed_cvs_data {
+interface Processed_csv_data {
   ticker: string;
   trade_date: Date;
   from: Split_date;
@@ -42,5 +42,5 @@ function getFormatDate(input_date: Date, form: string) {
   return year + form + month + form + day;
 }
 
-export type { CVS_DATA, A_stock_data, Processed_cvs_data, Split_date };
+export type { CSV_DATA, A_stock_data, Processed_csv_data, Split_date };
 export { getFormatDate };

@@ -37,20 +37,20 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var path = require("path");
-var get_cvs_data_1 = require("./modules/get_cvs_data");
+var get_csv_data_1 = require("./modules/get_csv_data");
 var get_stock_data_1 = require("./modules/get_stock_data");
-var objarr2cvs_1 = require("./modules/objarr2cvs");
+var objarr2csv_1 = require("./modules/objarr2csv");
 var input_filePath = path.join(__dirname, "../data/input_data.csv");
 var output_filePath = path.join(__dirname, "../data/output_data.csv");
-var cvs_data = get_cvs_data_1.get_cvs_data(input_filePath);
+var csv_data = get_csv_data_1.get_csv_data(input_filePath);
 var test_data = [
     { date: new Date("2021-1-5"), ticker: "PRGO" },
     { date: new Date("2021-1-2"), ticker: "HHC" },
     { date: new Date("2020-12-10"), ticker: "GEF" },
 ];
 //--------------------------------------------------
-var Target_CVS_DATA = test_data; // 정보를 원하는 csv데이터 (cvs_data || test_data)
-var Target_to_later = 20; // 기준일로 부터 며칠후까지 데이터를 받아올지
+var Target_CSV_DATA = test_data; // 정보를 원하는 csv데이터 (csv_data || test_data)
+var Target_to_later = 10; // 기준일로 부터 며칠후까지 데이터를 받아올지
 //--------------------------------------------------
 var main = function (data, to_later) { return __awaiter(void 0, void 0, void 0, function () {
     var finance_data, stock_data, error_ticker;
@@ -60,7 +60,7 @@ var main = function (data, to_later) { return __awaiter(void 0, void 0, void 0, 
             case 0:
                 console.log(to_later + "일 후 까지 데이터를 검색합니다.");
                 console.log("잠시만 기다려주세요.");
-                return [4 /*yield*/, get_stock_data_1.get_stock_data(get_stock_data_1.change_cvs_data_for_getting_stock_data(to_later, data))];
+                return [4 /*yield*/, get_stock_data_1.get_stock_data(get_stock_data_1.change_csv_data_for_getting_stock_data(to_later, data))];
             case 1:
                 finance_data = _b.sent();
                 stock_data = finance_data.stock_data;
@@ -78,9 +78,9 @@ var main = function (data, to_later) { return __awaiter(void 0, void 0, void 0, 
                     console.log(error_ticker);
                 }
                 console.log("\n-----------------------------------------------------\n");
-                objarr2cvs_1.save2cvs(output_filePath, objarr2cvs_1.ObjArr2String(stock_data, to_later));
+                objarr2csv_1.save2csv(output_filePath, objarr2csv_1.ObjArr2String(stock_data, to_later));
                 return [2 /*return*/];
         }
     });
 }); };
-main(Target_CVS_DATA, Target_to_later);
+main(Target_CSV_DATA, Target_to_later);

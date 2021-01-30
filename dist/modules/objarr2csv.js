@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.save2cvs = exports.ObjArr2String = void 0;
+exports.save2csv = exports.ObjArr2String = void 0;
 var fs = require("fs");
 var ObjArr2String = function (ObjArr, to) {
     var content = "ticker,base_date";
@@ -18,7 +18,7 @@ var ObjArr2String = function (ObjArr, to) {
     return content;
 };
 exports.ObjArr2String = ObjArr2String;
-var save2cvs = function (output_filePath, content) {
+var save2csv = function (output_filePath, content) {
     fs.writeFile(output_filePath, content, function (err) {
         if (err) {
             return console.log(err);
@@ -28,4 +28,4 @@ var save2cvs = function (output_filePath, content) {
         }
     });
 };
-exports.save2cvs = save2cvs;
+exports.save2csv = save2csv;

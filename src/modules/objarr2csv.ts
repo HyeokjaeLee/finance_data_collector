@@ -15,7 +15,7 @@ const ObjArr2String = (ObjArr: any, to: number) => {
   return content;
 };
 
-const save2cvs = (output_filePath: any, content: string) => {
+const save2csv = (output_filePath: any, content: string) => {
   fs.writeFile(output_filePath, content, function (err: any) {
     if (err) {
       return console.log(err);
@@ -25,4 +25,4 @@ const save2cvs = (output_filePath: any, content: string) => {
   });
 };
 
-export { ObjArr2String, save2cvs };
+export { ObjArr2String, save2csv };
