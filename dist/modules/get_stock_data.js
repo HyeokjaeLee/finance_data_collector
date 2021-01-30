@@ -69,21 +69,10 @@ var change_csv_data_for_getting_stock_data = function (to_later, csv_data) {
 };
 exports.change_csv_data_for_getting_stock_data = change_csv_data_for_getting_stock_data;
 var get_stock_data = function (csv_data) { return __awaiter(void 0, void 0, void 0, function () {
-    function isNumber(obj) {
-        return obj !== undefined && typeof (obj) === 'number' && !isNaN(obj);
-    }
-    function filterByID(item) {
-        if (isNumber(item.price) && item.price !== 0) {
-            return true;
-        }
-        invalidEntries++;
-        return false;
-    }
-    var invalidEntries, error_ticker, stock_data;
+    var error_ticker, stock_data;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                invalidEntries = 0;
                 error_ticker = [];
                 return [4 /*yield*/, Promise.all(csv_data.map(function (csv_data) { return __awaiter(void 0, void 0, void 0, function () {
                         var a_stock_data, processed_stock_data, test, e_1;
@@ -103,7 +92,9 @@ var get_stock_data = function (csv_data) { return __awaiter(void 0, void 0, void
                                 case 2:
                                     processed_stock_data = _a.sent();
                                     processed_stock_data.reverse();
-                                    test = processed_stock_data.filter(filterByID);
+                                    test = processed_stock_data.filter(function (data) {
+                                        return data.price != undefined;
+                                    });
                                     return [2 /*return*/, { ticker: csv_data.ticker, trade_date: csv_data.trade_date, data: test }];
                                 case 3:
                                     e_1 = _a.sent();

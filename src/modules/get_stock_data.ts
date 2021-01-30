@@ -31,21 +31,6 @@ const change_csv_data_for_getting_stock_data = (to_later: number, csv_data: CSV_
   });
 
 const get_stock_data = async (csv_data: Processed_csv_data[]) => {
-
-let invalidEntries = 0;
-
-function isNumber(obj:any) {
-  return obj !== undefined && typeof(obj) === 'number' && !isNaN(obj);
-}
-
-function filterByID(item:any) {
-  if (isNumber(item.price) && item.price !== 0) {
-    return true;
-  }
-  invalidEntries++;
-  return false;
-}
-
   const error_ticker: string[] = [];
   let stock_data = await Promise.all(
     csv_data.map(async (csv_data: Processed_csv_data) => {
@@ -67,7 +52,9 @@ function filterByID(item:any) {
           return { date: date_str, price: stock_data.close };
         });
         processed_stock_data.reverse();
-        let test = processed_stock_data.filter(filterByID);
+        let test = processed_stock_data.filter((data: any) => {
+          return data.price != undefined;
+        });
         return { ticker: csv_data.ticker, trade_date: csv_data.trade_date, data: test };
       } catch (e) {
         error_ticker.push(csv_data.ticker);
